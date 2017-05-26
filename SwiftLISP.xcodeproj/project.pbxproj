@@ -260,6 +260,7 @@
 				725B63621ED8657F0048E882 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

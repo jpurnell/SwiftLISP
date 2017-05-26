@@ -51,7 +51,7 @@ extension SExpr {
 		
 		// Returns: Tuple with remaining tokens and resulting S-Expression
 		
-		func parse(_ tokens: [Token], node: SExpr? = nil) -> (remaining: [Token], subexpr: SExpr?) {
+		func parse(_ tokens: [Token], node: SExpr? = nil) -> (remaining:[Token], subexpr:SExpr?) {
 			var tokens = tokens
 			var node = node
 			
@@ -61,30 +61,31 @@ extension SExpr {
 				
 				switch t {
 				case .pOpen:
-					// ner sexpr
-					let (tr, n) = parse(Array(tokens[(i+1)..<tokens.count]), node: .List([]))
-					assert(n != nil)
+					//new sexpr
+					let (tr,n) = parse( Array(tokens[(i+1)..<tokens.count]), node: .List([]))
+					assert(n != nil) //Cannot be nil
 					
 					(tokens, i) = (tr, 0)
 					node = appendTo(list: node, node: n!)
 					
 					if tokens.count != 0 {
 						continue
-					} else {
+					}else{
 						break
 					}
 				case .pClose:
-					// close sexpr
-					return (Array(tokens[(i+1)..<tokens.count]), node)
+					//close sexpr
+					return ( Array(tokens[(i+1)..<tokens.count]), node)
 				case let .textBlock(value):
 					node = appendTo(list: node, node: .Atom(value))
 				}
-				 i += 1
-			} while(tokens.count > 0)
+				
+				i += 1
+			}while(tokens.count > 0)
 			
-			return ([], node)
+			return ([],node)
 		}
-
+		
 
 		func appendTo(list: SExpr?, node: SExpr) -> SExpr {
 			var list = list
@@ -101,5 +102,20 @@ extension SExpr {
 		let tokens = tokenize(sexpr)
 		let result = parse(tokens)
 		return result.subexpr ?? .List([])
+	}
+}
+
+
+extension SExpr: ExpressibleByStringLiteral, ExpressibleByUnicodeScalarLiteral, ExpressibleByExtendedGraphemeClusterLiteral {
+	public init(stringLiteral value: String){
+		self = SExpr.read(value)
+	}
+	
+	public init(extendedGraphemeClusterLiteral value: String){
+		self.init(stringLiteral: value)
+	}
+	
+	public init(unicodeScalarLiteral value: String){
+		self.init(stringLiteral: value)
 	}
 }
